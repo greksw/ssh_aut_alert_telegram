@@ -1,0 +1,46 @@
+Для создания скрипта, который отправляет уведомление в Telegram при авторизации по SSH, можно использовать следующий подход:
+
+Создать бот в Telegram:
+Создайте нового бота через @BotFather и получите токен.
+
+Настроить скрипт на сервере:
+Напишите скрипт на Bash, который будет отправлять сообщение в Telegram.
+
+Настроить вызов скрипта при авторизации по SSH:
+Используйте файл /etc/profile или /etc/ssh/sshrc, чтобы скрипт запускался при каждой сессии SSH.
+
+Шаг 1: Создание Telegram-бота
+Напишите в Telegram @BotFather команду /newbot.
+Придумайте имя и username для бота.
+После создания бота получите токен.
+
+Шаг 2: Скрипт для отправки сообщения
+Создайте файл, например, /usr/local/bin/notify_telegram.sh:
+
+#!/bin/bash
+
+# Telegram Bot Token
+TOKEN="your_telegram_bot_token"
+# ID чата (ваш User ID)
+CHAT_ID="your_chat_id"
+
+# Сообщение
+MESSAGE="SSH login detected: $(whoami) from $(hostname -I | awk '{print $1}')"
+
+# Отправка сообщения
+curl -s -X POST "https://api.telegram.org/bot${TOKEN}/sendMessage" \
+     -d chat_id="${CHAT_ID}" \
+     -d text="${MESSAGE}"
+
+Сделайте скрипт исполняемым:
+
+sudo chmod +x /usr/local/bin/notify_telegram.sh
+
+Шаг 3: Настройка вызова скрипта при авторизации
+Чтобы скрипт выполнялся при входе пользователя через SSH, добавьте следующую строку в файл /etc/profile или /etc/ssh/sshrc:
+
+/usr/local/bin/notify_telegram.sh
+
+Итог
+Теперь, когда кто-то войдет на сервер через SSH, ваш скрипт будет выполняться, и вы получите уведомление в Telegram.
+
