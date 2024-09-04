@@ -11,8 +11,11 @@ HOSTNAME=$(hostname)
 # IP-адрес клиента
 IP_ADDRESS=$(echo $SSH_CLIENT | awk '{print $1}')
 
+# IP-адрес сервера
+IP_ADDRESS_SERVER=$(hostname -I | awk '{print $1}')
+
 # Сообщение
-MESSAGE="SSH login detected on server: ${HOSTNAME}. User: $(whoami) from IP: ${IP_ADDRESS}"
+MESSAGE="SSH login detected on server: ${HOSTNAME} (IP: ${IP_ADDRESS_SERVER}). User: $(whoami) from IP: ${IP_ADDRESS_CLIENT}"
 
 # Отправка сообщения
 curl -s -X POST "https://api.telegram.org/bot${TOKEN}/sendMessage" \
