@@ -9,7 +9,11 @@ CHAT_ID="your_chat_id"
 HOSTNAME=$(hostname)
 
 # IP-адрес клиента
-IP_ADDRESS=$(echo $SSH_CLIENT | awk '{print $1}')
+if [ -n "$SSH_CLIENT" ]; then
+    IP_ADDRESS_CLIENT=$(echo $SSH_CLIENT | awk '{print $1}')
+else
+    IP_ADDRESS_CLIENT="Unknown"
+fi
 
 # IP-адрес сервера
 IP_ADDRESS_SERVER=$(hostname -I | awk '{print $1}')
