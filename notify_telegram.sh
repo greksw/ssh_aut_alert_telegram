@@ -8,8 +8,11 @@ CHAT_ID="your_chat_id"
 # Имя хоста (название сервера)
 HOSTNAME=$(hostname)
 
+# IP-адрес клиента
+IP_ADDRESS=$(echo $SSH_CLIENT | awk '{print $1}')
+
 # Сообщение
-MESSAGE="SSH login detected on server: ${HOSTNAME}. User: $(whoami) from IP: $(hostname -I | awk '{print $1}')"
+MESSAGE="SSH login detected on server: ${HOSTNAME}. User: $(whoami) from IP: ${IP_ADDRESS}"
 
 # Отправка сообщения
 curl -s -X POST "https://api.telegram.org/bot${TOKEN}/sendMessage" \
