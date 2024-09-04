@@ -18,3 +18,7 @@ MESSAGE="SSH login detected on server: ${HOSTNAME}. User: $(whoami) from IP: ${I
 curl -s -X POST "https://api.telegram.org/bot${TOKEN}/sendMessage" \
      -d chat_id="${CHAT_ID}" \
      -d text="${MESSAGE}"
+
+# Очистка экрана
+clear
+
