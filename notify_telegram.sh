@@ -27,5 +27,5 @@ curl -s -X POST "https://api.telegram.org/bot${TOKEN}/sendMessage" \
      -d text="${MESSAGE}"
 
 # Очистка экрана
-clear
+clear&clear
 
