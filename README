@@ -49,3 +49,15 @@ sudo chmod +x /usr/local/bin/notify_telegram.sh
 
 SSH login detected on server: server_name. User: username from IP: 192.168.x.x
 
+Альтернативный метод
+Если хотите настроить скрипт для всех пользователей, но только при входе через SSH, можно создать файл /etc/profile.d/notify_telegram.sh:
+
+Создайте новый скрипт в папке /etc/profile.d/:
+
+sudo nano /etc/profile.d/notify_telegram.sh
+Вставьте в него следующую строку:
+
+/usr/local/bin/notify_telegram.sh
+Сохраните и закройте файл.
+
+Этот способ также будет работать и вызовет ваш скрипт при каждой новой SSH-сессии.
