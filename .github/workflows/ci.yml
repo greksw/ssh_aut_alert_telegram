@@ -1,0 +1,78 @@
+name: Shell CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Install ShellCheck
+        run: sudo apt-get update && sudo apt-get install -y shellcheck
+
+      - name: Bash syntax
+        run: |
+          bash -n ssh-login-alert.sh
+          bash -n notify_telegram.sh
+
+      - name: ShellCheck
+        run: shellcheck ssh-login-alert.sh notify_telegram.sh
+
+      - name: Validate preview sanitization
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          chmod +x ssh-login-alert.sh
+
+          output=$(
+            ./ssh-login-alert.sh --preview \
+              --user $'test\nuser' \
+              --remote $'192.0.2.10\tunexpected' \
+              --service sshd \
+              --tty ssh \
+              --host example-host
+          )
+
+          grep -q '^Host: example-host$' <<<"$output"
+          grep -q '^User: test user$' <<<"$output"
+          grep -q '^Remote: 192.0.2.10 unexpected$' <<<"$output"
+          [[ $output != *$'\t'* ]]
+          [[ $output != *$'\r'* ]]
+
+      - name: Validate PAM event filtering
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+          chmod +x ssh-login-alert.sh
+
+          PAM_TYPE=close_session \
+          PAM_SERVICE=sshd \
+          PAM_USER=testuser \
+          PAM_RHOST=192.0.2.10 \
+          ./ssh-login-alert.sh
+
+          PAM_TYPE=open_session \
+          PAM_SERVICE=sudo \
+          PAM_USER=testuser \
+          PAM_RHOST=192.0.2.10 \
+          ./ssh-login-alert.sh
+
+      - name: Check repository for embedded production token patterns
+        shell: bash
+        run: |
+          set -Eeuo pipefail
+
+          # Allow the documented example token only. Reject token-like values in
+          # shell source and any additional config/documentation line.
+          ! grep -En \
+            'TELEGRAM_BOT_TOKEN=[0-9]{6,}:[A-Za-z0-9_-]{20,}' \
+            ssh-login-alert.sh notify_telegram.sh README.md
+
+          test "$(grep -Ec '^TELEGRAM_BOT_TOKEN=123456789:replace_with_real_bot_token$' config/ssh-login-alert.conf.example)" -eq 1

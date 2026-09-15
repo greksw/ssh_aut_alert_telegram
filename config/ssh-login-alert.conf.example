@@ -1,0 +1,9 @@
+# Copy to /etc/ssh-login-alert.conf and set mode 0600, owner root:root.
+# Do not commit real credentials.
+
+TELEGRAM_BOT_TOKEN=123456789:replace_with_real_bot_token
+TELEGRAM_CHAT_ID=123456789
+
+# Keep delivery bounded so external API problems cannot accumulate workers.
+CURL_CONNECT_TIMEOUT=2
+CURL_MAX_TIME=5
