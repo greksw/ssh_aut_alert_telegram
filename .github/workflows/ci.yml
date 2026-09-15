@@ -43,7 +43,8 @@ jobs:
           grep -q '^Host: example-host$' <<<"$output"
           grep -q '^User: test user$' <<<"$output"
           grep -q '^Remote: 192.0.2.10 unexpected$' <<<"$output"
-          ! grep -q $'test\nuser' <<<"$output"
+          [[ $output != *$'\t'* ]]
+          [[ $output != *$'\r'* ]]
 
       - name: Validate PAM event filtering
         shell: bash
